@@ -7,5 +7,5 @@ import com.safetynet.alerts.model.MedicalRecord;
 
 @Repository
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Long> {
-
+        public MedicalRecord findByPersonFirstNameAndPersonLastName(String firstName, String lastName);
 }

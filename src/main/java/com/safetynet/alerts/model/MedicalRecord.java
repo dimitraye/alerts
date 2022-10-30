@@ -4,18 +4,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,10 +20,8 @@ public class MedicalRecord {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long Id;
 	@Transient
-	@JsonIgnore
 	private String firstName;
 	@Transient
-	@JsonIgnore	
 	private String lastName;
 	@Temporal(TemporalType.DATE)
 	private Date birthdate;
@@ -39,4 +29,7 @@ public class MedicalRecord {
 	private Set<String> medications = new HashSet();
 	@ElementCollection
 	private Set<String> allergies = new HashSet();
+	@JsonIgnore
+	@OneToOne(fetch = FetchType.EAGER)
+	private Person person;
 }
