@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
 
-@Service
 public interface IPersonService {
 	
 	/**
