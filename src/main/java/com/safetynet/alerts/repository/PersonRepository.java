@@ -8,5 +8,6 @@ import com.safetynet.alerts.model.Person;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
-
+	
+	public Person findByFirstNameAndLastName(String firstName, String lastName);
 }
