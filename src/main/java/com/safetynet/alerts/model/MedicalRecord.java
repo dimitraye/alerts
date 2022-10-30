@@ -10,6 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Transient;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +27,7 @@ public class MedicalRecord {
 	private String firstName;
 	@Transient
 	private String lastName;
+	@Temporal(TemporalType.DATE)
 	private Date birthdate;
 	@ElementCollection
 	private Set<String> medications = new HashSet();
