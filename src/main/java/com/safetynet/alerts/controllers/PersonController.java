@@ -3,12 +3,7 @@ package com.safetynet.alerts.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.IPersonService;
@@ -37,10 +32,10 @@ public class PersonController {
 	}
 	
 	@PutMapping("/person")
-	public Person updatePerson(@RequestParam String firstName, @RequestParam String lastName, Person person) {
+	public Person updatePerson(@RequestParam String firstName, @RequestParam String lastName, @RequestBody Person person) {
 
 		//Cherche person par nom prenom
-		Person personFromDB = personService.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+		Person personFromDB = personService.findByFirstNameAndLastName(firstName, lastName);
 
 		//si n'existe pas, envoie exception
 		if(personFromDB == null) {
@@ -55,7 +50,20 @@ public class PersonController {
 
 
 		return personService.updatePerson(personFromDB);
-	
+	}
+
+	//Supprimer une persone
+	@DeleteMapping("/person")
+	public void deletePerson(@RequestParam String firstName, @RequestParam String lastName){
+		//voir si la personne existe (nom, prénom)
+		Person personFromDB = personService.findByFirstNameAndLastName(firstName, lastName);
+
+		//S'il n'éxiste pas, envooie exception
+		if(personFromDB == null) {
+			throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
+		}
+		//Sinon, supprimer la personne
+		personService.deletePerson(personFromDB);
 	}
 
 }
