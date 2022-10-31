@@ -45,6 +45,4 @@ public class PersonServiceImpl implements IPersonService {
 		return personRepository.findByFirstNameAndLastName(firstName, lastName);
 	}
 
-
-
 }
