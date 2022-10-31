@@ -3,14 +3,7 @@ package com.safetynet.alerts.model;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,8 +24,8 @@ public class Person {
 	private String zip;
 	private String phone;
 	private String email;
-	
-	@OneToOne
+
+	@OneToOne(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.PERSIST)
 	private MedicalRecord medicalRecord;
 	@ManyToOne
 	private Firestation firestation;
