@@ -7,5 +7,5 @@ import com.safetynet.alerts.model.Firestation;
 
 @Repository
 public interface FirestationRepository extends JpaRepository<Firestation, Long> {
-
+    public Firestation findFirestationByAddress(String address);
 }
