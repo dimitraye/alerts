@@ -3,6 +3,7 @@ package com.safetynet.alerts.controllers;
 import java.util.List;
 import java.util.Set;
 
+import com.safetynet.alerts.dto.PersonInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,4 +76,17 @@ public class PersonController {
 		return personService.findEmailsByCity(city);
 	}
 
+	@GetMapping("/personInfo")
+	public PersonInfoDTO personInfo(@RequestParam String firstName, @RequestParam String lastName){
+		//voir si la personne existe (nom, prénom)
+		Person personFromDB = personService.findByFirstNameAndLastName(firstName, lastName);
+
+		//S'il n'éxiste pas, envooie exception
+		if(personFromDB == null) {
+			throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
+		}
+
+		//Sinon, retourner personInfoDTO
+		return new PersonInfoDTO(personFromDB);
+	}
 }
