@@ -1,6 +1,7 @@
 package com.safetynet.alerts.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,11 @@ public class PersonServiceImpl implements IPersonService {
 	@Override
 	public void deletePerson(Person person) {
 		personRepository.delete(person);
+	}
+
+	@Override
+	public Set<String> findEmailsByCity(String city) {
+		return personRepository.findEmailsByCity(city);
 	}
 
 	@Override
