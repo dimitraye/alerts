@@ -1,6 +1,7 @@
 package com.safetynet.alerts.controllers;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +65,14 @@ public class PersonController {
 		}
 		//Sinon, supprimer la personne
 		personService.deletePerson(personFromDB);
+	}
+
+
+
+	//List of emails
+	@GetMapping("/communityEmail")
+	public Set<String> findEmailsByCity(@RequestParam String city) {
+		return personService.findEmailsByCity(city);
 	}
 
 }
