@@ -19,8 +19,9 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 	@Query("SELECT email FROM Person WHERE city = ?1")
 	Set<String> findEmailsByCity(String city);
 
-	//@Query("SELECT  FROM Person WHERE firstName = ?1 AND lastName = ?2")
-	//Set<String> findPersoInfo(String lastname, String address, String email, MedicalRecord medicalRecord);
+	Set<Person> findAllByAddress(String address);
+
+
 }
 
 

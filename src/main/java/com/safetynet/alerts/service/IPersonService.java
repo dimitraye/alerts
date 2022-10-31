@@ -57,4 +57,12 @@ public interface IPersonService {
 	 * @return
 	 */
 	Set<String> findEmailsByCity(String city);
+
+	/**
+	 * Find the persons that have the same address
+	 * @param address
+	 * @return Set of persons
+	 */
+	Set<Person> findAllByAddress(String address);
+
 }
