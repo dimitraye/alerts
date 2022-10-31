@@ -29,7 +29,8 @@ public class MedicalRecord {
 	private Set<String> medications = new HashSet();
 	@ElementCollection
 	private Set<String> allergies = new HashSet();
+
 	@JsonIgnore
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	private Person person;
 }

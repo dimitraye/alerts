@@ -29,11 +29,11 @@ public class MedicalRecordServiceImpl implements IMedicalRecordService {
 
     @Override
     public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) {
-        return null;
+        return addMedicalRecord(medicalRecord);
     }
 
     @Override
     public void deleteMedicalRecord(MedicalRecord medicalRecord) {
-
+        medicalRecordRepository.delete(medicalRecord);
     }
 }

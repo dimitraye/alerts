@@ -24,8 +24,8 @@ public class Person {
 	private String zip;
 	private String phone;
 	private String email;
-	
-	@OneToOne(fetch = FetchType.EAGER)
+
+	@OneToOne(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.PERSIST)
 	private MedicalRecord medicalRecord;
 	@ManyToOne
 	private Firestation firestation;
