@@ -1,10 +1,17 @@
 package com.safetynet.alerts.controllers;
 
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.safetynet.alerts.dto.FamilyDTO;
+import com.safetynet.alerts.dto.FamilyMemberDTO;
 import com.safetynet.alerts.dto.PersonInfoDTO;
+import com.safetynet.alerts.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.safetynet.alerts.model.Person;
@@ -88,5 +95,54 @@ public class PersonController {
 
 		//Sinon, retourner personInfoDTO
 		return new PersonInfoDTO(personFromDB);
+	}
+
+	@GetMapping("/childAlert")
+	public FamilyDTO getFamilyFromAddress(@RequestParam String address){
+		//1 - Récupérer la liste des personnes ayant la même adresse
+		Set<Person> familyList = personService.findAllByAddress(address);
+		//Si personne ne correspond à l'adresse, renvoyer une liste de children et adults vide
+		if (CollectionUtils.isEmpty(familyList)){
+			return new FamilyDTO();
+		}
+
+		//2 - Peupler 2 listes , une liste d'enfants et une d'adultes
+		Set<Person> children = new HashSet<>();
+		Set<Person> adults = new HashSet<>();
+		// Ajouter toutes les personnes de 18 ans ou moins dans la liste children
+		children = familyList.stream().filter(person -> {
+			int age = 0;
+			if (person.getMedicalRecord() == null || person.getMedicalRecord().getBirthdate() == null) {
+				return false;
+			}
+			Date birthDate = person.getMedicalRecord().getBirthdate();
+			age = DateUtils.calculateAge(birthDate, new Date());
+
+			return age <= 18;
+		}).collect(Collectors.toSet());
+
+		//S'il n'y a pas d'enfants, renvoyer une liste de children et adults vide
+		if (CollectionUtils.isEmpty(children)){
+			return new FamilyDTO();
+		}
+
+		//Ajout de toutes les personnes dans la liste adults
+		adults.addAll(familyList);
+		//suppression de ous les enfants de la liste adults
+		adults.removeAll(children);
+
+		//Ajouts des personnes dans le set correspondant
+		Set<FamilyMemberDTO> childrenDTO = children.stream().map(person -> new FamilyMemberDTO(person)).collect(Collectors.toSet());
+		Set<FamilyMemberDTO> adultsDTO = adults.stream().map(person -> new FamilyMemberDTO(person)).collect(Collectors.toSet());
+
+		//création de l'objet familyDTO qui contient 2 sets, childrenDTO et adultsDTO
+		FamilyDTO familyDTO = new FamilyDTO();
+
+		// Initialisation des listes
+		familyDTO.setChildren(childrenDTO);
+		familyDTO.setAdults(adultsDTO);
+
+		//4 - retourner familyDTO
+		return familyDTO;
 	}
 }
