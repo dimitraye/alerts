@@ -20,7 +20,6 @@ public class MedicalRecordController {
     @GetMapping("/medicalRecords")
     public List<MedicalRecord> getAllMedicalRecords() {return medicalRecordService.getAllMedicalRecords();}
 
-    @Transactional
     @PostMapping("/medicalRecord")
     public MedicalRecord addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
         //1 - Verify if the person exist
