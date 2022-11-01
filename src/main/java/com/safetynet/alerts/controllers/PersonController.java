@@ -3,10 +3,7 @@ package com.safetynet.alerts.controllers;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.safetynet.alerts.dto.FamilyDTO;
-import com.safetynet.alerts.dto.FamilyMemberDTO;
-import com.safetynet.alerts.dto.PersonAddressDTO;
-import com.safetynet.alerts.dto.PersonInfoDTO;
+import com.safetynet.alerts.dto.*;
 import com.safetynet.alerts.repository.PersonRepository;
 import com.safetynet.alerts.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.IPersonService;
-
-import javax.swing.text.html.StyleSheet;
 
 @RestController
 public class PersonController {
@@ -173,4 +168,29 @@ public class PersonController {
 		return personsListDTO;
 	}
 
+	@GetMapping("/flood/stations")
+	public Map<String, Set<PersonFirestationDTO>> findByFirestationStationIn(@RequestParam List<Integer> stations){
+		//1 - Fetch persons associated to those stations
+		Set<Person> personsByStations = personService.findByFirestationStationIn(stations);
+
+		//2 - If there's no one associated to those stations, send an empty map
+		if(CollectionUtils.isEmpty(personsByStations)) {
+			return new HashMap<>();
+		}
+
+		//3 - create a map that will group the persons by address
+		Map<Object, List<Person>> personsByAddress = personsByStations.stream().collect(Collectors
+				.groupingBy(person -> person.getAddress()));
+
+		//Transform the list of personByAddress to list personFireStationDTO
+		Map<String, Set<PersonFirestationDTO>> personsByaddressDTO = new HashMap<>();
+		personsByAddress.forEach((o, persons) -> {
+			String address = (String)o;
+			Set<PersonFirestationDTO> personFirestationDTOS = persons.stream()
+					.map(person -> new PersonFirestationDTO(person)).collect(Collectors.toSet());
+			personsByaddressDTO.put(address, personFirestationDTOS);
+		});
+
+		return personsByaddressDTO;
+	}
 }
