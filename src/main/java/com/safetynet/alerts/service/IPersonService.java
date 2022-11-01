@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
 
+/**
+ * Interface that manage the interaction with the person entity
+ */
 public interface IPersonService {
 
 	/**

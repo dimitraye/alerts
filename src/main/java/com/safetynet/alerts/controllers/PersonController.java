@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.safetynet.alerts.dto.*;
 import com.safetynet.alerts.repository.PersonRepository;
 import com.safetynet.alerts.utils.DateUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -14,29 +15,52 @@ import org.springframework.web.bind.annotation.*;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.IPersonService;
 
+/**
+ * Manage the requests associated to persons
+ */
+@Slf4j
 @RestController
 public class PersonController {
 	@Autowired
 	IPersonService personService;
-	
+
+	/**
+	 * Get all persons
+	 * @return a list of persons
+	 */
 	@GetMapping("/persons")
 	public List<Person> getAllPersons() {
 		return personService.getAllPersons();
 	}
-	
+
+
+	/**
+	 * Save a person.
+	 * @param person to save
+	 * @return saved person
+	 */
 	@PostMapping("/person")
 	public Person addPerson(@RequestBody Person person) {
-		//Cherche person par nom prenom
 		Person personFromDB = personService.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
 
 		//si existe, envoie exception
 		if(personFromDB != null) {
+			log.error("Error : FirstName and LastName already exist in the Data Base.");
 			throw new IllegalArgumentException("Erreur : Nom ét pénom déjà éxistants dans la base.");
 		}
 		//sinon creer person
+		log.info("Saving a new person");
 		return personService.addPerson(person);
 	}
-	
+
+
+	/**
+	 * Update the informations of a person
+	 * @param firstName search param to find the person to update
+	 * @param lastName search param to find the person to update
+	 * @param person the person to update
+	 * @return updated person
+	 */
 	@PutMapping("/person")
 	public Person updatePerson(@RequestParam String firstName, @RequestParam String lastName, @RequestBody Person person) {
 
@@ -45,8 +69,10 @@ public class PersonController {
 
 		//si n'existe pas, envoie exception
 		if(personFromDB == null) {
+			log.error("Error : FirstName and LastName already doesn't exist in the Data Base.");
 			throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
 		}
+		log.debug("Set properties in the object personFromDB.");
 		//sinon mettre à jour person
 		personFromDB.setAddress(person.getAddress());
 		personFromDB.setCity(person.getCity());
@@ -54,11 +80,15 @@ public class PersonController {
 		personFromDB.setPhone(person.getPhone());
 		personFromDB.setEmail(person.getEmail());
 
-
+		log.info("Updating a person");
 		return personService.updatePerson(personFromDB);
 	}
 
-	//Supprimer une persone
+	/**
+	 * Delete a person
+	 * @param firstName search param to find the person to delete
+	 * @param lastName search param to find the person to delete
+	 */
 	@DeleteMapping("/person")
 	public void deletePerson(@RequestParam String firstName, @RequestParam String lastName){
 		//voir si la personne existe (nom, prénom)
@@ -66,20 +96,30 @@ public class PersonController {
 
 		//S'il n'éxiste pas, envooie exception
 		if(personFromDB == null) {
+			log.error("Error : FirstName and LastName doesn't exist in the Data Base.");
 			throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
 		}
-		//Sinon, supprimer la personne
 		personService.deletePerson(personFromDB);
+		log.info("Person deleted");
 	}
 
 
-
-	//List of emails
+	/**
+	 * Find all the emeails of the persons linked to a city
+	 * @param city search param
+	 * @return list of emails
+	 */
 	@GetMapping("/communityEmail")
 	public Set<String> findEmailsByCity(@RequestParam String city) {
 		return personService.findEmailsByCity(city);
 	}
 
+	/**
+	 * Display the informations of a prrson
+	 * @param firstName search param
+	 * @param lastName search param
+	 * @return informations of a prrson
+	 */
 	@GetMapping("/personInfo")
 	public PersonInfoDTO personInfo(@RequestParam String firstName, @RequestParam String lastName){
 		//voir si la personne existe (nom, prénom)
@@ -87,13 +127,22 @@ public class PersonController {
 
 		//S'il n'éxiste pas, envooie exception
 		if(personFromDB == null) {
+			log.error("Error : FirstName and LastName doesn't exist in the Data Base.");
 			throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
 		}
 
+		log.info("Returning the person's informations");
 		//Sinon, retourner personInfoDTO
 		return new PersonInfoDTO(personFromDB);
 	}
 
+
+	/**
+	 * List of children and the other family members linked to an address
+	 * Display the list if there's at list a child in this address
+	 * @param address search param
+	 * @return list of children and family members for this address
+	 */
 	@GetMapping("/childAlert")
 	public FamilyDTO getFamilyFromAddress(@RequestParam String address){
 		//1 - Récupérer la liste des personnes ayant la même adresse
@@ -102,7 +151,7 @@ public class PersonController {
 		if (CollectionUtils.isEmpty(familyList)){
 			return new FamilyDTO();
 		}
-
+		log.debug("Fill 2 lists with their objects");
 		//2 - Peupler 2 listes , une liste d'enfants et une d'adultes
 		Set<Person> children = new HashSet<>();
 		Set<Person> adults = new HashSet<>();
@@ -139,19 +188,28 @@ public class PersonController {
 		familyDTO.setChildren(childrenDTO);
 		familyDTO.setAdults(adultsDTO);
 
-		//4 - retourner familyDTO
+		log.info("Returning the whole family");
 		return familyDTO;
 	}
 
 
-	//List of phone numbers
+	/**
+	 * Display the list of phone numbers of the people associated to this address
+	 * @param station search param
+	 * @return the list of phone numbers of the people associated to this address
+	 */
 	@GetMapping("/phoneAlert")
 	public Set<PersonRepository.Phone> findPhoneByFirestationStation(@RequestParam int station) {
+		log.info("Returning list of phones associated to the station.");
 		return personService.findPhoneByFirestationStation(station);
 	}
 
 
-	//List of persons that have the same address
+	/**
+	 * Display a list of people that have the same address
+	 * @param address search param
+	 * @return list of people that have the same address
+	 */
 	@GetMapping("/fire")
 	public Set<PersonAddressDTO> getPersonsByAddress(@RequestParam String address){
 		//1 - Récupérer la liste des personnes ayant la même adresse
@@ -163,12 +221,19 @@ public class PersonController {
 		}
 
 		//2 - Peupler la liste
-		Set<PersonAddressDTO> personsListDTO = persons.stream().map(person -> new PersonAddressDTO(person)).collect(Collectors.toSet());
+		Set<PersonAddressDTO> personsListDTO = persons.stream().map(person -> new PersonAddressDTO(person))
+				.collect(Collectors.toSet());
 
+		log.info("Returning the list of people that have the same address");
 		//4 - retourner personsListDTO
 		return personsListDTO;
 	}
 
+	/**
+	 * Display a list of people associated to a list of firestations
+	 * @param stations search param
+	 * @return list of people associated to a list of firestations
+	 */
 	@GetMapping("/flood/stations")
 	public Map<String, Set<PersonFirestationDTO>> findByFirestationStationIn(@RequestParam List<Integer> stations){
 		//1 - Fetch persons associated to those stations
@@ -192,11 +257,16 @@ public class PersonController {
 			personsByaddressDTO.put(address, personFirestationDTOS);
 		});
 
+		log.info("Returning a list of people linked to the list of  firestations");
 		return personsByaddressDTO;
 	}
 
 
-
+	/**
+	 * Display a list of people associated to a firestation
+	 * @param station search param
+	 * @return list of people associated to a firestation
+	 */
 	@GetMapping("/firestation")
 	public ContainterPersonDTO findByFirestationStation(@RequestParam int station){
 		//1 - Fetch persons associated to this station
@@ -232,9 +302,7 @@ public class PersonController {
 		containterPersonDTO.setAdultNumber(adultCount.get());
 		containterPersonDTO.setChildrenNumber(childrenCount.get());
 
+		log.info("Returning a list of people linked to the firestation");
 		return containterPersonDTO;
 	}
-
-
-
 }
