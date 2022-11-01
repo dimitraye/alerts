@@ -1,13 +1,11 @@
 package com.safetynet.alerts.controllers;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.safetynet.alerts.dto.FamilyDTO;
 import com.safetynet.alerts.dto.FamilyMemberDTO;
+import com.safetynet.alerts.dto.PersonAddressDTO;
 import com.safetynet.alerts.dto.PersonInfoDTO;
 import com.safetynet.alerts.repository.PersonRepository;
 import com.safetynet.alerts.utils.DateUtils;
@@ -17,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.IPersonService;
+
+import javax.swing.text.html.StyleSheet;
 
 @RestController
 public class PersonController {
@@ -154,5 +154,23 @@ public class PersonController {
 		return personService.findPhoneByFirestationStation(station);
 	}
 
+
+	//List of persons that have the same address
+	@GetMapping("/fire")
+	public Set<PersonAddressDTO> getPersonsByAddress(@RequestParam String address){
+		//1 - Récupérer la liste des personnes ayant la même adresse
+		Set<Person> persons = personService.findAllByAddress(address);
+
+		//Si personne ne correspond à l'adresse, renvoyer une liste vide
+		if (CollectionUtils.isEmpty(persons)){
+			return new HashSet<>();
+		}
+
+		//2 - Peupler la liste
+		Set<PersonAddressDTO> personsListDTO = persons.stream().map(person -> new PersonAddressDTO(person)).collect(Collectors.toSet());
+
+		//4 - retourner personsListDTO
+		return personsListDTO;
+	}
 
 }
