@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
+/**
+ * Interface that manage the interaction with the medical record entity
+ */
 public interface IMedicalRecordService {
 
     /**
@@ -22,19 +25,10 @@ public interface IMedicalRecordService {
      */
     public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord);
 
-    public MedicalRecord findByPersonFirstNameAndLastName(String firstname, String lastname);
-
     /**
      * Update a medicalRecord
      * @param medicalRecord
      * @return the medicalRecord that has been modified
      */
     public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord);
-
-    /**
-     * Delete a medicalRecord based of its firstname and lastname
-     * @param medicalRecord
-     */
-    public void deleteMedicalRecord(MedicalRecord medicalRecord);
-
 }

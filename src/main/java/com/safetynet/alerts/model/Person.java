@@ -8,6 +8,9 @@ import javax.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Model of  person
+ */
 @Data
 @NoArgsConstructor
 @Entity

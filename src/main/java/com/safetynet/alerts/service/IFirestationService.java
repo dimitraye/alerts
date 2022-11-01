@@ -1,11 +1,12 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.model.Firestation;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+/**
+ * Interface that manage the interaction with the firestation entity
+ */
 public interface IFirestationService {
 
     /**
