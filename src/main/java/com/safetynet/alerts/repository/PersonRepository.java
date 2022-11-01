@@ -23,10 +23,12 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
 	Set<Phone> findPhonesByFirestationStation(int station);
 
+	Set<Person> findByFirestationStationIn(List<Integer> stations);
+
+
 	public interface Phone {
 		String getPhone();
 	}
-	Set<Person> findByFirestationStationIn(List<Integer> stations);
 }
 
 
