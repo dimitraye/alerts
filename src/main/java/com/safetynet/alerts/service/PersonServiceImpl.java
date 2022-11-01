@@ -46,6 +46,11 @@ public class PersonServiceImpl implements IPersonService {
 	}
 
 	@Override
+	public Set<PersonRepository.Phone> findPhoneByFirestationStation(int station) {
+		return personRepository.findPhonesByFirestationStation(station);
+	}
+
+	@Override
 	public Person findByFirstNameAndLastName(String firstName, String lastName) {
 		return personRepository.findByFirstNameAndLastName(firstName, lastName);
 	}
