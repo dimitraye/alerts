@@ -1,6 +1,7 @@
 package com.safetynet.alerts.controllers;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.safetynet.alerts.dto.*;
@@ -193,4 +194,47 @@ public class PersonController {
 
 		return personsByaddressDTO;
 	}
+
+
+
+	@GetMapping("/firestation")
+	public ContainterPersonDTO findByFirestationStation(@RequestParam int station){
+		//1 - Fetch persons associated to this station
+		Set<Person> personsByStation = personService.findByFirestationStationIn(List.of(station));
+
+		//2 - If there's no one associated to this station, send an empty map
+		if(CollectionUtils.isEmpty(personsByStation)) {
+			return new ContainterPersonDTO();
+		}
+
+		//Transform the list of personByAddress to list personFireStationDTO
+		Set<PersonDTO> personDTOS = personsByStation.stream()
+				.map(person -> new PersonDTO(person)).collect(Collectors.toSet());
+
+		ContainterPersonDTO containterPersonDTO = new ContainterPersonDTO();
+		containterPersonDTO.setPersons(personDTOS);
+
+		AtomicInteger adultCount = new AtomicInteger();
+		AtomicInteger childrenCount = new AtomicInteger();
+
+		personsByStation.forEach(person -> {
+			if (person.getMedicalRecord() == null || person.getMedicalRecord().getBirthdate() == null) {
+				return;
+			}
+			int age = DateUtils.calculateAge(person.getMedicalRecord().getBirthdate(), new Date());
+			if (age <= 18) {
+				childrenCount.getAndIncrement();
+			} else {
+				adultCount.getAndIncrement();
+			}
+		});
+
+		containterPersonDTO.setAdultNumber(adultCount.get());
+		containterPersonDTO.setChildrenNumber(childrenCount.get());
+
+		return containterPersonDTO;
+	}
+
+
+
 }
