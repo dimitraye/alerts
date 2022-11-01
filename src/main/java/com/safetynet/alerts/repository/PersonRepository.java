@@ -1,6 +1,5 @@
 package com.safetynet.alerts.repository;
 
-import com.safetynet.alerts.model.MedicalRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,6 +19,14 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 	Set<String> findEmailsByCity(String city);
 
 	Set<Person> findAllByAddress(String address);
+
+	Set<Phone> findPhonesByFirestationStation(int station);
+
+	public interface Phone {
+		String getPhone();
+	}
+
+
 
 
 }

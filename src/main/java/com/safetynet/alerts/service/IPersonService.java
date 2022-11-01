@@ -65,4 +65,10 @@ public interface IPersonService {
 	 */
 	Set<Person> findAllByAddress(String address);
 
+	/**
+	 * get a List of phone numbers from persons that have the same Firestation station number
+	 * @param station
+	 * @return
+	 */
+	Set<PersonRepository.Phone> findPhoneByFirestationStation(int station);
 }

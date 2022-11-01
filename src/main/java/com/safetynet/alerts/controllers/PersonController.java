@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.safetynet.alerts.dto.FamilyDTO;
 import com.safetynet.alerts.dto.FamilyMemberDTO;
 import com.safetynet.alerts.dto.PersonInfoDTO;
+import com.safetynet.alerts.repository.PersonRepository;
 import com.safetynet.alerts.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -145,4 +146,13 @@ public class PersonController {
 		//4 - retourner familyDTO
 		return familyDTO;
 	}
+
+
+	//List of phone numbers
+	@GetMapping("/phoneAlert")
+	public Set<PersonRepository.Phone> findPhoneByFirestationStation(@RequestParam int station) {
+		return personService.findPhoneByFirestationStation(station);
+	}
+
+
 }
