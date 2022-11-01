@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.safetynet.alerts.model.Person;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Set;
 
 
@@ -25,10 +26,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 	public interface Phone {
 		String getPhone();
 	}
-
-
-
-
+	Set<Person> findByFirestationStationIn(List<Integer> stations);
 }
 
 

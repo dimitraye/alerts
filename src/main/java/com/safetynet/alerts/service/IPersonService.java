@@ -72,5 +72,12 @@ public interface IPersonService {
 	 */
 	Set<PersonRepository.Phone> findPhoneByFirestationStation(int station);
 
+	/**
+	 * get a list of persons by Firestation number
+	 * @param stations
+	 * @return List of persons
+	 */
+	Set<Person> findByFirestationStationIn(List<Integer> stations);
+
 
 }
