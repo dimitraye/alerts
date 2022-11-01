@@ -23,17 +23,9 @@ public class MedicalRecordServiceImpl implements IMedicalRecordService {
     }
 
     @Override
-    public MedicalRecord findByPersonFirstNameAndLastName(String firstname, String lastname) {
-        return null;
-    }
-
-    @Override
     public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) {
         return addMedicalRecord(medicalRecord);
     }
 
-    @Override
-    public void deleteMedicalRecord(MedicalRecord medicalRecord) {
-        medicalRecordRepository.delete(medicalRecord);
-    }
+
 }
