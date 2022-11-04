@@ -43,7 +43,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 	 * @param station search param
 	 * @return list of phones
 	 */
-	Set<Phone> findPhonesByFirestationStation(int station);
+	@Query(value = "SELECT DISTINCT phone FROM person p, firestation f WHERE p.firestation_id = f.id AND station = ?", nativeQuery = true)
+	Set<String> findPhonesByFirestationStation(int station);
 
 	/**
 	 * Find the people linked to a list of firestations

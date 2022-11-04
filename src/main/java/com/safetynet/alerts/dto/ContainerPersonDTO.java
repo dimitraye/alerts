@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class ContainterPersonDTO {
+public class ContainerPersonDTO {
 
     Set<PersonDTO> persons = new HashSet<>();
 
