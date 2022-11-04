@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,8 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "firstName", "lastName" }) })
 public class Person {
@@ -32,4 +36,6 @@ public class Person {
 	private MedicalRecord medicalRecord;
 	@ManyToOne
 	private Firestation firestation;
+
+
 }

@@ -3,8 +3,8 @@ package com.safetynet.alerts.service;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.safetynet.alerts.dto.ContainerPersonDTO;
+import com.safetynet.alerts.dto.FamilyDTO;
 
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
@@ -26,7 +26,7 @@ public interface IPersonService {
 	 *
 	 * @param firstName
 	 * @param lastName
-	 * @return
+	 * @return person
 	 */
 	public Person findByFirstNameAndLastName(String firstName, String lastName);
 
@@ -73,7 +73,7 @@ public interface IPersonService {
 	 * @param station
 	 * @return
 	 */
-	Set<PersonRepository.Phone> findPhoneByFirestationStation(int station);
+	Set<String> findPhoneByFirestationStation(int station);
 
 	/**
 	 * get a list of persons by Firestation number
@@ -82,5 +82,19 @@ public interface IPersonService {
 	 */
 	Set<Person> findByFirestationStationIn(List<Integer> stations);
 
+	/**
+	 * List of children and the other family members linked to an address
+	 * Display the list if there's at least a child in this address
+	 * @param address search param
+	 * @return list of children and family members for this address
+	 */
+	FamilyDTO getFamilyFromAddress(String address);
 
+
+	/**
+	 * Display the list of phone numbers of the people associated to this address
+	 * @param stationNumber search param
+	 * @return the list of phone numbers of the people associated to this address
+	 */
+	public ContainerPersonDTO findByFirestationStation(int stationNumber);
 }

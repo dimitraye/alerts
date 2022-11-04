@@ -32,4 +32,9 @@ public class Firestation {
 	@OneToMany
 	@JsonIgnore
 	private Set<Person> persons = new HashSet();
+
+	public Firestation(String address, int station) {
+		this.address = address;
+		this.station = station;
+	}
 }
