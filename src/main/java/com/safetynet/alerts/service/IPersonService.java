@@ -1,13 +1,17 @@
 package com.safetynet.alerts.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.safetynet.alerts.dto.ContainerPersonDTO;
 import com.safetynet.alerts.dto.FamilyDTO;
 
+import com.safetynet.alerts.dto.PersonFirestationDTO;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Interface that manage the interaction with the person entity
@@ -97,4 +101,11 @@ public interface IPersonService {
 	 * @return the list of phone numbers of the people associated to this address
 	 */
 	public ContainerPersonDTO findByFirestationStation(int stationNumber);
+
+	/**
+	 * Display a list of people associated to a list of stations grouped by address
+	 * @param stations search param
+	 * @return list of people associated to a list of stations grouped by address
+	 */
+	public Map<String, Set<PersonFirestationDTO>> findPersonsByFirestationStationIn(List<Integer> stations);
 }

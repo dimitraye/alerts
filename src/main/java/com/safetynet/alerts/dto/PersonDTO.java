@@ -22,8 +22,5 @@ public class PersonDTO {
         this.lastName = person.getLastName();
         this.address = person.getAddress();
         this.phone = person.getPhone();
-
     }
-
-
 }
