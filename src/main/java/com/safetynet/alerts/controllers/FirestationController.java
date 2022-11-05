@@ -47,8 +47,7 @@ public class FirestationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         log.info("Saving the new firestation");
-        //sinon créer firestation
-        //return firestationService.addMappingFirestation(firestation);
+
         return  new ResponseEntity<>(firestationService.addMappingFirestation(firestation), HttpStatus.CREATED);
 
     }
@@ -91,7 +90,7 @@ public class FirestationController {
         //1 - Verify if the firestation exist
         Firestation firestationFromDB = firestationService.findByAddress(address);
 
-        //2 - If firestation doesn't exist, throw exception
+        //2 - If firestation doesn't exist, return 404 not found
         if(firestationFromDB == null) {
             log.error("Error : Firestation doesn't exist in Data Base");
             //throw new IllegalArgumentException("Erreur : Firestation non éxistante dans la base.");
