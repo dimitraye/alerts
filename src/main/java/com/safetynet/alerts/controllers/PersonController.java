@@ -217,30 +217,15 @@ public class PersonController {
 	@GetMapping("/flood/stations")
 	public ResponseEntity<Map<String, Set<PersonFirestationDTO>>> findByFirestationStationIn(@RequestParam List<Integer> stations){
 		//1 - Fetch persons associated to those stations
-		Set<Person> personsByStations = personService.findByFirestationStationIn(stations);
+		Map<String, Set<PersonFirestationDTO>> personsByStations = personService.findPersonsByFirestationStationIn(stations);
 
 		//2 - If there's no one associated to those stations, send an empty map
 		if(CollectionUtils.isEmpty(personsByStations)) {
-			//return new HashMap<>();
 			return new ResponseEntity<>(new HashMap<>(), HttpStatus.OK);
 		}
 
-		//3 - create a map that will group the persons by address
-		Map<Object, List<Person>> personsByAddress = personsByStations.stream().collect(Collectors
-				.groupingBy(person -> person.getAddress()));
-
-		//Transform the list of personByAddress to list personFireStationDTO
-		Map<String, Set<PersonFirestationDTO>> personsByaddressDTO = new HashMap<>();
-		personsByAddress.forEach((o, persons) -> {
-			String address = (String)o;
-			Set<PersonFirestationDTO> personFirestationDTOS = persons.stream()
-					.map(person -> new PersonFirestationDTO(person)).collect(Collectors.toSet());
-			personsByaddressDTO.put(address, personFirestationDTOS);
-		});
-
 		log.info("Returning a list of people linked to the list of  firestations");
-		//return personsByaddressDTO;
-		return new ResponseEntity<>(personsByaddressDTO, HttpStatus.OK);
+		return new ResponseEntity<>(personsByStations, HttpStatus.OK);
 	}
 
 

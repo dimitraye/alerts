@@ -1,19 +1,15 @@
 package com.safetynet.alerts.service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.safetynet.alerts.dto.ContainerPersonDTO;
-import com.safetynet.alerts.dto.FamilyDTO;
-import com.safetynet.alerts.dto.FamilyMemberDTO;
-import com.safetynet.alerts.dto.PersonDTO;
+import com.safetynet.alerts.dto.*;
 import com.safetynet.alerts.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.alerts.model.Person;
@@ -158,7 +154,31 @@ public class PersonServiceImpl implements IPersonService {
 	}
 
 
+	@Override
+	public Map<String, Set<PersonFirestationDTO>> findPersonsByFirestationStationIn(List<Integer> stations) {
+		//1 - Fetch persons associated to those stations
+		Set<Person> personsByStations = findByFirestationStationIn(stations);
 
+		//2 - If there's no one associated to those stations, send an empty map
+		if(CollectionUtils.isEmpty(personsByStations)) {
+			return null;
+		}
+
+		//3 - create a map that will group the persons by address
+		Map<String, List<Person>> personsByAddress = personsByStations.stream().collect(Collectors
+				.groupingBy(person -> person.getAddress()));
+
+		//Transform the list of personByAddress to list personFireStationDTO
+		Map<String, Set<PersonFirestationDTO>> personsByaddressDTO = new HashMap<>();
+		personsByAddress.forEach((address, persons) -> {
+			Set<PersonFirestationDTO> personFirestationDTOS = persons.stream()
+					.map(person -> new PersonFirestationDTO(person)).collect(Collectors.toSet());
+			personsByaddressDTO.put(address, personFirestationDTOS);
+		});
+
+		log.info("Returning a list of people linked to the list of  firestations");
+		return personsByaddressDTO;
+	}
 
 
 	@Override
