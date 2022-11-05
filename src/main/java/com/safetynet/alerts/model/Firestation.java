@@ -1,5 +1,6 @@
 package com.safetynet.alerts.model;
 
+import java.net.Proxy;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,5 +37,11 @@ public class Firestation {
 	public Firestation(String address, int station) {
 		this.address = address;
 		this.station = station;
+	}
+
+
+	public static Proxy builder() {
+
+		return null;
 	}
 }
