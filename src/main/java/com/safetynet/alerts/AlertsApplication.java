@@ -1,31 +1,28 @@
 package com.safetynet.alerts;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alerts.dto.MedicalRecordForImport;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.FirestationRepository;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
 import com.safetynet.alerts.repository.PersonRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 @SpringBootApplication
 public class AlertsApplication {
-	
+
 	@Autowired
 	private PersonRepository personRepository;
 	
@@ -48,7 +45,9 @@ public class AlertsApplication {
 			List<Person> persons = null;
 			// read json and write to db
 			ObjectMapper mapper = new ObjectMapper();
-			TypeReference<List<Person>> typeReferencePerson = new TypeReference<List<Person>>(){};
+			DateFormat formater = new SimpleDateFormat("MM/dd/yyyy");
+			mapper.setDateFormat(formater);
+			TypeReference<List<Person>> typeReferencePerson = new TypeReference<>(){};
 			InputStream inputStream = TypeReference.class.getResourceAsStream("/json/person.json");
 			try {
 				persons = mapper.readValue(inputStream,typeReferencePerson);
@@ -60,13 +59,12 @@ public class AlertsApplication {
 			
 			
 			//Save MedicalRecords in DB
-			TypeReference<List<MedicalRecordForImport>> typeReferenceMedicalRecord = new TypeReference<List<MedicalRecordForImport>>(){};
+			TypeReference<List<MedicalRecord>> typeReferenceMedicalRecord = new TypeReference<>(){};
 			inputStream = TypeReference.class.getResourceAsStream("/json/medicalRecord.json");
 			try {
 				List<Person> personList = persons;
-				List<MedicalRecordForImport> medicalRecordsForImport = mapper.readValue(inputStream,typeReferenceMedicalRecord);
-				List<MedicalRecord> medicalRecords = medicalRecordsForImport.stream()
-						.map(m -> m.toMedicalRecord()).collect(Collectors.toList());
+				List<MedicalRecord> medicalRecords = mapper.readValue(inputStream,typeReferenceMedicalRecord);
+
 				medicalRecordRepository.saveAll(medicalRecords);
 				System.out.println("MedicalRecords Saved!");
 				medicalRecords.forEach(medicalRecord -> {
@@ -90,7 +88,7 @@ public class AlertsApplication {
 			List<Firestation> firestations = null;
 			List<Person> personList = persons;
 			// read json and write to db
-			TypeReference<List<Firestation>> typeReferenceFirestation= new TypeReference<List<Firestation>>(){};
+			TypeReference<List<Firestation>> typeReferenceFirestation= new TypeReference<>(){};
 			inputStream = TypeReference.class.getResourceAsStream("/json/firestation.json");
 			try {
 				firestations = mapper.readValue(inputStream,typeReferenceFirestation);
@@ -109,9 +107,6 @@ public class AlertsApplication {
 			} catch (IOException e){
 				System.out.println("Unable to save firestations: " + e.getMessage());
 			}
-			
-			
-
 		};
 	}
 

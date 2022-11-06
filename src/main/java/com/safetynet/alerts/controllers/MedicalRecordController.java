@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -35,47 +36,41 @@ public class MedicalRecordController {
      * @param medicalRecord to save
      * @return saved medical record
      */
+    @Transactional
     @PostMapping("/medicalRecord")
     public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-        log.debug("Create a person ");
         //1 - Verify if the person exist
         Person personFromDB = personService.findByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName());
-        //2 - If person doesn't exist, throw exception
+        //2 - If person doesn't exist, RETURN NOT FOUND
         if (personFromDB == null){
             log.error("Error : The person doesn't exist in the Data Base.");
-            //throw new IllegalArgumentException("Erreur : La personne n'éxiste pas dans la base.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         //3 - verify if the medicalRecord of this person exists
         if (personFromDB.getMedicalRecord() != null) {
-            log.error("Error : This person is already saved in the Data Base.");
-            //throw new IllegalArgumentException("Erreur : Cette personne à déjà un dossier médical.");
+            log.error("Error : This person already have a medical record.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         log.debug("Create a medical record.");
         //If not create MedicalRecord
         MedicalRecord medicalRecordFromDB = medicalRecordService.addMedicalRecord(medicalRecord);
 
-        //If medicalRecordFromDB == null , throws error : problem while saving medicalRecord
+        //If medicalRecordFromDB == null , return internal service error
         if (medicalRecordFromDB == null) {
             log.error("Error : The medical record couldn't be saved");
-            //throw new IllegalArgumentException("Erreur : Le dossier Médical n'a pas pu être sauvegardé.");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         log.debug("Set the property medical record in the object personFromDB");
         personFromDB.setMedicalRecord(medicalRecordFromDB);
-        log.debug("Create a personUpdated that get the updated version of the object personFromDB");
+        log.debug("Update the person and his medical record");
         Person personUpdated = personService.updatePerson(personFromDB);
-        // TODO : Si le personUpdated n'a pas un médicalrecord + throw une exception
         if (personUpdated == null || personUpdated.getMedicalRecord() == null) {
             log.error("Error : The medical record couldn't be saved");
-            //throw new IllegalArgumentException("Erreur : Le dossier Médical n'a pas pu être sauvegardé.");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
-        log.info("Saving the new medical record");
-        return new ResponseEntity<>(medicalRecordFromDB, HttpStatus.OK);
+
+        return new ResponseEntity<>(medicalRecordFromDB, HttpStatus.CREATED);
     }
 
 
