@@ -16,9 +16,9 @@ public class DateUtils {
      */
     public static int calculateAge(Date birthdate, Date date) {
         DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        int d1 = Integer.parseInt(formatter.format(birthdate));
-        int d2 = Integer.parseInt(formatter.format(date));
-        int age = (d2-d1)/10000;
+        int startingDate = Integer.parseInt(formatter.format(birthdate));
+        int endDate = Integer.parseInt(formatter.format(date));
+        int age = (endDate-startingDate)/10000;
         return age;
     }
 }
