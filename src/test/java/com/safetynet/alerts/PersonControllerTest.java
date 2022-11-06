@@ -28,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+/**
+ * This class test the methods of the class PersonController
+ */
 @WebMvcTest(PersonController.class)
 public class PersonControllerTest {
 
@@ -48,20 +51,30 @@ public class PersonControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Test that person has been created
+     * @throws Exception
+     */
     @Test
     void shouldCreatePerson() throws Exception {
+        //1 - Creation data : create a person
         Person personTest = DataTest.getPerson1();
 
+        //2 - Test : test that the person has been created
         mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(personTest)))
                 .andExpect(status().isCreated())
                 .andDo(print());
     }
 
-
+    /**
+     * Test that a person has been updated
+     * @throws Exception
+     */
     @Test
     void shouldUpdatePerson() throws Exception {
 
+        //1 - Creation data :
         Person person = DataTest.getPerson1();
         Person updatedPerson = Person.builder().firstName("Dayle")
                 .lastName("Xeyb")
@@ -78,11 +91,12 @@ public class PersonControllerTest {
         paramsMap.add("firstName", firstName);
         paramsMap.add("lastName", lastName);
 
+        //2 - Data processing : Search a person by its first name and last name
+        // + update the person and return the person
         when(personService.findByFirstNameAndLastName(firstName, lastName)).thenReturn(person);
         when(personService.updatePerson(any(Person.class))).thenReturn(updatedPerson);
 
-
-
+        //3 - Test : test that the person has been updated
         mockMvc.perform(put("/person").params(paramsMap)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedPerson)))
@@ -94,6 +108,10 @@ public class PersonControllerTest {
     }
 
 
+    /**
+     * Test that a person has been deleted
+     * @throws Exception
+     */
     @Test
     void shouldDeletePerson() throws Exception {
         Person person = DataTest.getPerson1();
@@ -113,22 +131,26 @@ public class PersonControllerTest {
                 .andDo(print());
     }
 
+    /**
+     * Test that the method return a list of emails ordered by city
+     * @throws Exception
+     */
     @Test
     void findEmailsByCityTest() throws Exception {
-
+        //1 - Creation data :
         Person person1 = DataTest.getPerson1();
         Person person2 = DataTest.getPerson2();
         person2.setCity(person1.getCity());
         Person person3 = DataTest.getPerson3();
         person3.setCity(person1.getCity());
 
-
         Set<String> emails = Set.of(person1.getEmail(), person2.getEmail(), person3.getEmail());
-
         String city = person1.getCity();
+
         MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
         paramsMap.add("city", city);
 
+        //2 - Test : test that the method return a list of emails ordered by city
         when(personService.findEmailsByCity(city)).thenReturn(emails);
         mockMvc.perform(get("/communityEmail").params(paramsMap))
                 .andExpect(status().isOk())
@@ -138,8 +160,13 @@ public class PersonControllerTest {
     }
 
 
+    /**
+     * Test that the informations of a person has been returned
+     * @throws Exception
+     */
     @Test
     void getPersonInfoTest () throws Exception {
+        //1 - Creation data :
         Person person = DataTest.getPerson1();
         person.setMedicalRecord(DataTest.getMedicalRecord1());
         PersonInfoDTO personInfo = new PersonInfoDTO(person);
@@ -154,7 +181,10 @@ public class PersonControllerTest {
         paramsMap.add("firstName", firstName);
         paramsMap.add("lastName", lastName);
 
+        //2 - Data processing : search a person by its first and last name
         when(personService.findByFirstNameAndLastName(firstName, lastName)).thenReturn(person);
+
+        //3 - Test : test that a the informations of a person has been returned
         mockMvc.perform(get("/personInfo").params(paramsMap)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(personInfo.getFirstName()))
                 .andExpect(jsonPath("$.lastName").value(personInfo.getLastName()))
@@ -167,9 +197,16 @@ public class PersonControllerTest {
     }
 
 
+    /**
+     * Test that the method return a list of all the persons that have the same address
+     * This list have two lists, a list of children (<= 18 years old), and a list of adults
+     * @throws Exception
+     */
     @Test
     void shouldReturngetFamilyFromAddress() throws Exception {
 
+        //1 - Creation data : create 3 persons
+        // + Create a list a set of children and a set of adults
         Person person1 = DataTest.getPerson1();
         person1.setMedicalRecord(DataTest.getMedicalRecord1());
         FamilyMemberDTO person1DTO = new FamilyMemberDTO(person1);
@@ -186,6 +223,8 @@ public class PersonControllerTest {
         family.setChildren(Set.of(childDTO));
         family.setAdults(Set.of(person1DTO, person2DTO));
 
+        //2 - Test : test that a list of persons that have the same address is returned
+        // + return the number of children and the number of adults
         when(personService.getFamilyFromAddress(person1.getAddress())).thenReturn(family);
         mockMvc.perform(get("/childAlert").param("address", person1.getAddress()))
                 .andExpect(status().isOk())
@@ -194,9 +233,15 @@ public class PersonControllerTest {
                 .andDo(print());
     }
 
+    /**
+     * Test that return the phone of the persons that have the same station Number
+     * @throws Exception
+     */
     @Test
     void shouldFindPhonesByFirestationStation() throws Exception {
-
+        //1 - Creation data : create 2 persons
+        // + create a set that contains the phone number of these people
+        // + create a station number
         Person person1 = DataTest.getPerson1();
         person1.setFirestation(DataTest.getFirestation1());
         Person person2 = DataTest.getPerson2();
@@ -210,6 +255,7 @@ public class PersonControllerTest {
         MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
         paramsMap.add("firestation", String.valueOf(stationNumber));
 
+        // Test :
         when(personService.findPhoneByFirestationStation(stationNumber)).thenReturn(phones);
         mockMvc.perform(get("/phoneAlert").params(paramsMap))
                 .andExpect(status().isOk())
@@ -219,9 +265,13 @@ public class PersonControllerTest {
     }
 
 
+    /**
+     * Test that he mehod return all the persons that have the same address
+     * @throws Exception
+     */
     @Test
     void shouldReturnPersonByAddress() throws Exception {
-
+        //1 - Creation data : create 3 persons
         Person person1 = DataTest.getPerson1();
         person1.setMedicalRecord(DataTest.getMedicalRecord1());
         person1.setFirestation(DataTest.getFirestation1());
@@ -238,6 +288,7 @@ public class PersonControllerTest {
 
         Set<Person> personsSet = Set.of(person1, person2, person3);
 
+        //2 - Test:
         when(personService.findAllByAddress(person1.getAddress())).thenReturn(personsSet);
         mockMvc.perform(get("/fire").param("address", person1.getAddress()))
                 .andExpect(status().isOk())
@@ -245,10 +296,13 @@ public class PersonControllerTest {
                 .andDo(print());
     }
 
-
+    /**
+     * Test that the method return all the persons that have the same station number
+     * @throws Exception
+     */
     @Test
     void shouldFindByFirestationStationIn() throws Exception {
-
+        //1 - Creation data : create 3 persons
         Person person1 = DataTest.getPerson1();
         person1.setMedicalRecord(DataTest.getMedicalRecord1());
         person1.setFirestation(new Firestation(person1.getAddress(), 1));
@@ -281,6 +335,7 @@ public class PersonControllerTest {
         String stationsStr = stations.stream()
                 .map(s -> String.valueOf(s)).collect(Collectors.joining(","));
 
+        //2 - Test :
         when(personService.findPersonsByFirestationStationIn(stations)).thenReturn(personsByaddressDTO);
         mockMvc.perform(get("/flood/stations").param("stations", stationsStr))
                 .andExpect(status().isOk())
@@ -289,9 +344,15 @@ public class PersonControllerTest {
     }
 
 
+    /**
+     * Test that return all the persons that have the same firestation
+     * @throws Exception
+     */
     @Test
     void shouldFindByFirestationStation() throws Exception {
-        //1 - prepare data
+        //1 - Create data : create a container that will contain all thes persons separated in 2 sets, one for the adults, and the other for the children
+        // + create 3 persons, 2 adults and one child
+        // + create a set
         ContainerPersonDTO containerPersonDTO = new ContainerPersonDTO();
 
         Person person1 = DataTest.getPerson1();
@@ -311,7 +372,7 @@ public class PersonControllerTest {
         containerPersonDTO.setAdultNumber(2);
 
         int stationNumber = person1.getFirestation().getStation();
-        //2 - test
+        //2 - Test
         when(personService.findByFirestationStation(stationNumber)).thenReturn(containerPersonDTO);
         mockMvc.perform(get("/firestation").param("stationNumber", String.valueOf(stationNumber)))
                 .andExpect(status().isOk())

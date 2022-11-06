@@ -34,6 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * This class test the methods of the class FirestationController
+ */
 @WebMvcTest(FirestationController.class)
 public class FirestationControllerTest {
 
@@ -57,10 +60,16 @@ public class FirestationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Test that a firestation has been created
+     * @throws Exception
+     */
     @Test
     void shouldCreateFirestation() throws Exception {
+        //1 - Creation data : create a firestation
         Firestation firestationTest = DataTest.getFirestation1();
 
+        //2 - Test : thest that the firestation has been created
         mockMvc.perform(post("/firestation").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(firestationTest)))
                 .andExpect(status().isCreated())
@@ -68,17 +77,24 @@ public class FirestationControllerTest {
     }
 
 
+    /**
+     * Test that the number of a firestation has been updated
+     * @throws Exception
+     */
     @Test
     void shouldUpdateFirestation() throws Exception {
 
+        //1 - Creation data :
         Firestation firestation = DataTest.getFirestation1();
         Firestation updatedFirestation = DataTest.getFirestation2();
 
         String address = "Univers 19";
 
+        //2 - Data processing :
         when(firestationService.findByAddress(address)).thenReturn(firestation);
         when(firestationService.updateNumberFirestation(any(Firestation.class))).thenReturn(updatedFirestation);
 
+        //3 - Test :
         mockMvc.perform(put("/firestation").param("address", address)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedFirestation)))
@@ -89,15 +105,23 @@ public class FirestationControllerTest {
     }
 
 
+    /**
+     * Test that a firestation has been deleted
+     * @throws Exception
+     */
     @Test
     void shouldDeleteMappingFirestation() throws Exception {
+        //1 - Creation data :
         Firestation firestation = DataTest.getFirestation1();
 
         String address = firestation.getAddress();
 
+        //2 - Data processing : search a firestation by its first name and last name
+        // + delete the firestation
         when(firestationService.findByAddress(address)).thenReturn(firestation);
         doNothing().when(firestationRepository).delete(firestation);
 
+        //3 - Test : test that the firestation has been deleted
         mockMvc.perform(delete("/firestation").param("address", address))
                 .andExpect(status().isNoContent())
                 .andDo(print());

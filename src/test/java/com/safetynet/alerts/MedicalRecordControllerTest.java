@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -28,12 +27,14 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.Mockito.*;
 
+
+/**
+ * This class test the methods of the class MedicalRecordController
+ */
 @WebMvcTest(MedicalRecordController.class)
 public class MedicalRecordControllerTest {
 
@@ -60,19 +61,27 @@ public class MedicalRecordControllerTest {
     @Autowired
     MedicalRecordController medicalRecordController;
 
+    /**
+     *Test that a medical record is created
+     * @throws Exception
+     */
     @Test
     void shouldCreateMedicalRecord() throws Exception {
-
+        //1 - Creation data : a person and a medical record
+        // + setting the mediccal record of the person
         Person person = DataTest.getPerson1();
         MedicalRecord medicalRecord = DataTest.getMedicalRecord1();
         medicalRecord.setFirstName(person.getFirstName());
         medicalRecord.setLastName(person.getLastName());
 
-
+        //2 - Data processing : search a person by its fist name and last name
+        // + create a new medical record
+        // + update the person
         when(personService.findByFirstNameAndLastName(person.getFirstName(), person.getLastName())).thenReturn(person);
         when(medicalRecordService.addMedicalRecord(any(MedicalRecord.class))).thenReturn(medicalRecord);
         when(personService.updatePerson(any(Person.class))).thenReturn(person);
 
+        //3 - Test : test that the data is created
         mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(medicalRecord)))
                 .andExpect(status().isCreated())
@@ -80,9 +89,13 @@ public class MedicalRecordControllerTest {
     }
 
 
+    /**
+     * Test that the medical record has been updated
+     * @throws Exception
+     */
     @Test
     void shouldUpdateMedicalRecord() throws Exception {
-
+        //1 - Creation data :
         DateFormat df  = new SimpleDateFormat("dd/MM/yyyy");
         objectMapper.setDateFormat(df);
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
@@ -107,9 +120,12 @@ public class MedicalRecordControllerTest {
         String firstName = medicalRecord.getFirstName();
         String lastName = medicalRecord.getLastName();
 
+        //2 - Data processing : search a person by its fist name and last name
+        // + update the medical record of the person
         when(personService.findByFirstNameAndLastName(firstName, lastName)).thenReturn(person);
         when(medicalRecordService.updateMedicalRecord(any(MedicalRecord.class))).thenReturn(updatedMedicalRecord);
 
+        //3 - Test : test that the properties MedicalRecord AKA birthdate, medications and allergies has been updated
         mockMvc.perform(put("/medicalRecord")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedMedicalRecord)))
@@ -125,8 +141,16 @@ public class MedicalRecordControllerTest {
     }
 
 
+    /**
+     * Test that the medical record of a person has been deleted
+     * @throws Exception
+     */
     @Test
     void shouldDeleteMedicalRecord() throws Exception {
+        //1 - Creation data : create a person and a medical record
+        // + set the medical record of the person
+        // + create the parameters of the request AKA firstName and lastName
+        // + create a map that contains the 2 parameters
         Person person = DataTest.getPerson1();
         MedicalRecord medicalRecord = DataTest.getMedicalRecord1();
         person.setMedicalRecord(medicalRecord);
@@ -138,9 +162,12 @@ public class MedicalRecordControllerTest {
         paramsMap.add("firstName", firstName);
         paramsMap.add("lastName", lastName);
 
+        //2 - Data processing : return the person that have the same first name as firstName and last name as lastName
+        // + update and return the person
         when(personService.findByFirstNameAndLastName(firstName, lastName)).thenReturn(person);
         when(personService.updatePerson(person)).thenReturn(person);
 
+        //3 - Test : test that the medical record of the person has been deleted
         mockMvc.perform(delete("/medicalRecord").params(paramsMap))
                 .andExpect(status().isNoContent())
                 .andDo(print());
