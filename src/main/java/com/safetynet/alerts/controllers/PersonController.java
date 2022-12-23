@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controllers;
 
+import com.safetynet.alerts.config.ExcludeFromJacocoGeneratedReport;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class PersonController {
 	 * @return a list of persons
 	 */
 	@GetMapping("/persons")
+	@ExcludeFromJacocoGeneratedReport
 	public List<Person> getAllPersons() {
 		return personService.getAllPersons();
 	}

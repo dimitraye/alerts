@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controllers;
 
+import com.safetynet.alerts.config.ExcludeFromJacocoGeneratedReport;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.service.IFirestationService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class FirestationController {
      * @return firestation List
      */
     @GetMapping("/firestations")
+    @ExcludeFromJacocoGeneratedReport
     public List<Firestation> getAllFirestations() {
         return firestationService.getAllFirestations();
     }
@@ -40,16 +42,14 @@ public class FirestationController {
         //1 - Verify if the firestation exist
         Firestation firestationFromDB = firestationService.findByAddress(firestation.getAddress());
 
-        //2 - If person exist, throw exception
+        //2 - If firestation already exist, throw exception
         if(firestationFromDB != null) {
             log.error("Error : Firestation already exists in the Data Base");
-            //throw new IllegalArgumentException("Erreur : Firestation déjà éxistante dans la base.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         log.info("Saving the new firestation");
 
         return  new ResponseEntity<>(firestationService.addMappingFirestation(firestation), HttpStatus.CREATED);
-
     }
 
 
@@ -63,21 +63,19 @@ public class FirestationController {
     public ResponseEntity<Firestation> updateFirestation(@RequestParam String address, @RequestBody Firestation firestation) {
 
         //1 - Verify if the firestation exist
-        Firestation firestattionFromDB = firestationService.findByAddress(address);
+        Firestation firestationFromDB = firestationService.findByAddress(address);
 
         //2 - If firestation doesn't exist, throw exception
-        if(firestattionFromDB == null) {
+        if(firestationFromDB == null) {
             log.error("Error : Firestation does not exist");
-            //throw new IllegalArgumentException("Erreur : Firestation non éxistante dans la base.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         //sinon mettre à jour station de Firestation
-        firestattionFromDB.setStation(firestation.getStation());
+        firestationFromDB.setStation(firestation.getStation());
 
         log.info("Returning updated Firestation");
-        //return firestationService.updateNumberFirestation(firestattionFromDB);
-        return new ResponseEntity<>(firestationService.updateNumberFirestation(firestattionFromDB), HttpStatus.OK);
+        return new ResponseEntity<>(firestationService.updateNumberFirestation(firestationFromDB), HttpStatus.OK);
     }
 
 
@@ -93,7 +91,6 @@ public class FirestationController {
         //2 - If firestation doesn't exist, return 404 not found
         if(firestationFromDB == null) {
             log.error("Error : Firestation doesn't exist in Data Base");
-            //throw new IllegalArgumentException("Erreur : Firestation non éxistante dans la base.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 

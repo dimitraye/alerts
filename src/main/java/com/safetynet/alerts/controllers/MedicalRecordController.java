@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controllers;
 
+import com.safetynet.alerts.config.ExcludeFromJacocoGeneratedReport;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.IMedicalRecordService;
@@ -29,6 +30,7 @@ public class MedicalRecordController {
      * @return List of Medical Record.
      */
     @GetMapping("/medicalRecords")
+    @ExcludeFromJacocoGeneratedReport
     public List<MedicalRecord> getAllMedicalRecords() {return medicalRecordService.getAllMedicalRecords();}
 
     /**
@@ -87,7 +89,6 @@ public class MedicalRecordController {
         //2 - If person doesn't exist, throw exception
         if (personFromDB == null){
             log.error("Error : This person doesn't exist in the Data Base.");
-            //throw new IllegalArgumentException("Erreur : La personne n'éxiste pas dans la base.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         //3 - verify if the medicalRecord of this person exists
