@@ -68,6 +68,24 @@ public class PersonControllerTest {
     }
 
     /**
+     * Test that person has been created
+     * @throws Exception
+     */
+    @Test
+    void shouldReturn400WhenCreateIfërsonExist() throws Exception {
+        //1 - Creation data : create a person
+        Person personTest = DataTest.getPerson1();
+
+        //2 - Test : test that the person has been created
+        when(personService.findByFirstNameAndLastName(personTest.getFirstName(),
+            personTest.getLastName())).thenReturn(personTest);
+        mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(personTest)))
+            .andExpect(status().isBadRequest())
+            .andDo(print());
+    }
+
+    /**
      * Test that a person has been updated
      * @throws Exception
      */
@@ -76,7 +94,8 @@ public class PersonControllerTest {
 
         //1 - Creation data :
         Person person = DataTest.getPerson1();
-        Person updatedPerson = Person.builder().firstName("Dayle")
+        Person updatedPerson = Person.builder()
+                .firstName("Dayle")
                 .lastName("Xeyb")
                 .address("Univers 10")
                 .city("Poitiers")
@@ -109,6 +128,44 @@ public class PersonControllerTest {
 
 
     /**
+     * Test that a person has been updated
+     * @throws Exception
+     */
+    @Test
+    void shouldReturn404WhenUpdateIfPersonNotFound() throws Exception {
+
+        //1 - Creation data :
+        Person person = DataTest.getPerson1();
+        Person updatedPerson = Person.builder()
+            .firstName("Dayle")
+            .lastName("Xeyb")
+            .address("Univers 10")
+            .city("Poitiers")
+            .zip("11111111")
+            .phone("07-67-61-03-49")
+            .email("W.M.X@gmail.com").build();
+
+        String firstName = "Dayle";
+        String lastName = "Xeyb";
+
+        MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
+        paramsMap.add("firstName", firstName);
+        paramsMap.add("lastName", lastName);
+
+        //2 - Data processing : Search a person by its first name and last name
+        // + update the person and return the person
+        when(personService.findByFirstNameAndLastName(firstName, lastName)).thenReturn(null);
+
+        //3 - Test : test that the person has been updated
+        mockMvc.perform(put("/person").params(paramsMap)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedPerson)))
+            .andExpect(status().isNotFound())
+            .andDo(print());
+    }
+
+
+    /**
      * Test that a person has been deleted
      * @throws Exception
      */
@@ -129,6 +186,29 @@ public class PersonControllerTest {
         mockMvc.perform(delete("/person").params(paramsMap))
                 .andExpect(status().isNoContent())
                 .andDo(print());
+    }
+
+
+    /**
+     * Test that a person has been deleted
+     * @throws Exception
+     */
+    @Test
+    void shouldReturn404WhenDeleteIfPersonDoesNotExist() throws Exception {
+        Person person = DataTest.getPerson1();
+
+        String firstName = person.getFirstName();
+        String lastName = person.getLastName();
+
+        MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
+        paramsMap.add("firstName", firstName);
+        paramsMap.add("lastName", lastName);
+
+        when(personService.findByFirstNameAndLastName(firstName, lastName)).thenReturn(null);
+
+        mockMvc.perform(delete("/person").params(paramsMap))
+            .andExpect(status().isNotFound())
+            .andDo(print());
     }
 
     /**
