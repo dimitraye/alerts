@@ -99,6 +99,7 @@ public class FirestationController {
             log.info("The firestation has been deleted");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            log.error("Error : Failed to delete the firestation");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

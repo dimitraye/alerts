@@ -7,6 +7,9 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 
+/**
+ * This class allow to exclude the methods and class that we don't want to see in the reports
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE, CONSTRUCTOR})
 public @interface ExcludeFromJacocoGeneratedReport {
