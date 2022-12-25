@@ -51,7 +51,6 @@ public class PersonController {
 		if(personFromDB != null) {
 			log.error("Error : FirstName and LastName already exist in the Data Base.");
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			//throw new IllegalArgumentException("Erreur : Nom ét pénom déjà éxistants dans la base.");
 		}
 		//sinon creer person
 		log.info("Saving a new person");
@@ -75,7 +74,6 @@ public class PersonController {
 		//si n'existe pas, envoie exception
 		if(personFromDB == null) {
 			log.error("Error : FirstName and LastName already doesn't exist in the Data Base.");
-			//throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		log.debug("Set properties in the object personFromDB.");
@@ -103,7 +101,6 @@ public class PersonController {
 		//S'il n'éxiste pas, envooie exception
 		if(personFromDB == null) {
 			log.error("Error : FirstName and LastName doesn't exist in the Data Base.");
-			//throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
@@ -124,7 +121,7 @@ public class PersonController {
 	 */
 	@GetMapping("/communityEmail")
 	public ResponseEntity<Set<String>>  findEmailsByCity(@RequestParam String city) {
-		//return personService.findEmailsByCity(city);
+		log.info("Return a list of emails associated to the people of the city");
 		return new ResponseEntity<>(personService.findEmailsByCity(city), HttpStatus.OK);
 	}
 
@@ -136,19 +133,16 @@ public class PersonController {
 	 */
 	@GetMapping("/personInfo")
 	public ResponseEntity<PersonInfoDTO> getPersonInfo(@RequestParam String firstName, @RequestParam String lastName){
-		//voir si la personne existe (nom, prénom)
 		Person personFromDB = personService.findByFirstNameAndLastName(firstName, lastName);
 
-		//S'il n'éxiste pas, envooie exception
+		//S'il n'éxiste pas, envoie statut 404
 		if(personFromDB == null) {
 			log.error("Error : FirstName and LastName doesn't exist in the Data Base.");
-			//throw new IllegalArgumentException("Erreur : Nom ét pénom non éxistants dans la base.");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
 		log.info("Returning the person's informations");
 		//Sinon, retourner personInfoDTO
-		//return new PersonInfoDTO(personFromDB);
 		return new ResponseEntity<>(new PersonInfoDTO(personFromDB), HttpStatus.OK);
 	}
 
@@ -197,7 +191,6 @@ public class PersonController {
 
 		//Si personne ne correspond à l'adresse, renvoyer une liste vide
 		if (CollectionUtils.isEmpty(persons)){
-			//return new HashSet<>();
 			return new ResponseEntity<>(new HashSet<>(), HttpStatus.OK);
 		}
 
@@ -207,7 +200,6 @@ public class PersonController {
 
 		log.info("Returning the list of people that have the same address");
 		//4 - retourner personsListDTO
-		//return personsListDTO;
 		return  new ResponseEntity<>(personsListDTO, HttpStatus.OK);
 	}
 

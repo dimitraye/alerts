@@ -54,7 +54,6 @@ public class MedicalRecordController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         log.debug("Create a medical record.");
-        //If not create MedicalRecord
         MedicalRecord medicalRecordFromDB = medicalRecordService.addMedicalRecord(medicalRecord);
 
         //If medicalRecordFromDB == null , return internal service error
@@ -95,7 +94,6 @@ public class MedicalRecordController {
         MedicalRecord medicalRecordFromDB = personFromDB.getMedicalRecord() ;
         if (medicalRecordFromDB == null) {
             log.error("Error : This person doesn't have a medical record");
-            //throw new IllegalArgumentException("Erreur : Cette personne n'a pas de dossier médical.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -123,14 +121,12 @@ public class MedicalRecordController {
         //2 - If person doesn't exist, throw exception
         if (personFromDB == null){
             log.error("Error : This person doesn't exist in the Data Base");
-            //throw new IllegalArgumentException("Erreur : La personne n'existe pas dans la base.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         //3 - verify if the medicalRecord of this person exists
         MedicalRecord medicalRecordFromDB = personFromDB.getMedicalRecord() ;
         if (medicalRecordFromDB == null) {
             log.error("Error : This person doesn't have a medical record.");
-            //throw new IllegalArgumentException("Erreur : Cette personne n'a pas de dossier médical.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
