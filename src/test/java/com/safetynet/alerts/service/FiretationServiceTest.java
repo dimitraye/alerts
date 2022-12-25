@@ -17,6 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+/**
+ * This class test the methods of the class IFirestationService
+ */
 public class FiretationServiceTest {
 
   @InjectMocks
@@ -28,13 +31,18 @@ public class FiretationServiceTest {
   @Mock
   FirestationRepository firestationRepository;
 
+
   @BeforeEach
   public void init() {
     MockitoAnnotations.openMocks(this);
   }
 
+  /**
+   * Test that all the firestations are returned
+   */
   @Test
   public void getAllFirestationTest() {
+    //1 - Creation Data :
     List<Firestation> list = new ArrayList<>();
     Firestation firestation1 = DataTest.getFirestation1();
     Firestation firestation2 = DataTest.getFirestation2();
@@ -44,9 +52,10 @@ public class FiretationServiceTest {
     list.add(firestation2);
     list.add(firestation3);
 
+    //2 - Data processing : Return a list that contains all the firestations
     when(firestationRepository.findAll()).thenReturn(list);
 
-    //test
+    //3 - Test : Verify that all the firestations are returned as expected
     List<Firestation> firestations = firestationService.getAllFirestations();
 
     assertEquals(3, firestations.size());
@@ -54,45 +63,70 @@ public class FiretationServiceTest {
   }
 
 
+  /**
+   * Verify that the correct firestation is return when we enter its address
+   */
   @Test
   public void findByAddressTest()
   {
+    //1 - Data Processing : Return the firestation that have the same address as the one in the method
+    // findFirestationByAddress.
     when(firestationRepository.findFirestationByAddress("Adresse"))
         .thenReturn(DataTest.getFirestation1());
 
     Firestation firestation = firestationService.findByAddress("Adresse");
 
+    //2 - Test : Test that the correct firestation is returned
     assertEquals("15 rue des champs", firestation.getAddress());
     assertEquals(5, firestation.getStation());
   }
 
 
+  /**
+   * Verify that the firestation has been created
+   * @throws ParseException
+   */
   @Test
   public void addMappingFirestationTest() throws ParseException {
+    //1 - Data Creation :
     Firestation firestation = DataTest.getFirestation1();
 
+    //2 - Data Processing : Save the firestation
     firestationService.addMappingFirestation(firestation);
 
+    //3 - Test : Verify that the firestation has been created
     verify(firestationRepository, times(1)).save(firestation);
   }
 
 
+  /**
+   * Verify that the firestation has been updated
+   */
   @Test
   public void updateFirestationTest() {
+    //1 - Data Creation :
     Firestation firestation = DataTest.getFirestation1();
 
+    //2 - Data Processing : Update the firestation
     firestationService.updateNumberFirestation(firestation);
 
+    //3 - Test : Verify that the firestation has been updated
     verify(firestationRepository, times(1)).save(firestation);
   }
 
 
+  /**
+   * Verify that the firestation has been deleted
+   */
   @Test
   public void deleteFirestationTest() {
+    //1 - Data Creation :
     Firestation firestation = DataTest.getFirestation1();
 
+    //2 - Data Processing : Delete the firestation
     firestationService.deleteMappingFirestation(firestation);
 
+    //3 - Test : Verify that the station has been deleted
     verify(firestationRepository, times(1)).delete(firestation);
   }
 }

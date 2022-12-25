@@ -195,6 +195,7 @@ public class PersonControllerTest {
      */
     @Test
     void shouldReturn404WhenDeleteIfPersonDoesNotExist() throws Exception {
+        //1 - Creation data :
         Person person = DataTest.getPerson1();
 
         String firstName = person.getFirstName();
@@ -204,8 +205,10 @@ public class PersonControllerTest {
         paramsMap.add("firstName", firstName);
         paramsMap.add("lastName", lastName);
 
+        //2 - Data processing : search a person by its first and last name then return nothing
         when(personService.findByFirstNameAndLastName(firstName, lastName)).thenReturn(null);
 
+        //3 - Test : test that an exception is thrown when the person does not exist.
         mockMvc.perform(delete("/person").params(paramsMap))
             .andExpect(status().isNotFound())
             .andDo(print());
@@ -335,7 +338,7 @@ public class PersonControllerTest {
         MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
         paramsMap.add("firestation", String.valueOf(stationNumber));
 
-        // Test :
+        //2 - Test : test that the phone number of the persons that belongs to the same firestation
         when(personService.findPhoneByFirestationStation(stationNumber)).thenReturn(phones);
         mockMvc.perform(get("/phoneAlert").params(paramsMap))
                 .andExpect(status().isOk())
@@ -368,7 +371,7 @@ public class PersonControllerTest {
 
         Set<Person> personsSet = Set.of(person1, person2, person3);
 
-        //2 - Test:
+        //2 - Test: test that a list of person is that have the same address is returned
         when(personService.findAllByAddress(person1.getAddress())).thenReturn(personsSet);
         mockMvc.perform(get("/fire").param("address", person1.getAddress()))
                 .andExpect(status().isOk())
@@ -415,7 +418,8 @@ public class PersonControllerTest {
         String stationsStr = stations.stream()
                 .map(s -> String.valueOf(s)).collect(Collectors.joining(","));
 
-        //2 - Test :
+        //2 - Test : test that a list of person is that belongs to the same station is returned for
+        // every stations put in parameter
         when(personService.findPersonsByFirestationStationIn(stations)).thenReturn(personsByaddressDTO);
         mockMvc.perform(get("/flood/stations").param("stations", stationsStr))
                 .andExpect(status().isOk())
@@ -425,7 +429,7 @@ public class PersonControllerTest {
 
 
     /**
-     * Test that return all the persons that have the same firestation
+     * Test that the method return all the persons that have the same firestation
      * @throws Exception
      */
     @Test
@@ -452,7 +456,7 @@ public class PersonControllerTest {
         containerPersonDTO.setAdultNumber(2);
 
         int stationNumber = person1.getFirestation().getStation();
-        //2 - Test
+        //2 - Test : test that a list of person is that belongs to the same station is returned
         when(personService.findByFirestationStation(stationNumber)).thenReturn(containerPersonDTO);
         mockMvc.perform(get("/firestation").param("stationNumber", String.valueOf(stationNumber)))
                 .andExpect(status().isOk())

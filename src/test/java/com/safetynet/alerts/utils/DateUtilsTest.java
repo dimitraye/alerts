@@ -12,7 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class DateUtilsTest {
 
 
-
+    /**
+     * Test that the age of a person is calculated correctle
+     * @throws ParseException
+     */
     @Test
     void shouldCalculateAge() throws ParseException {
 

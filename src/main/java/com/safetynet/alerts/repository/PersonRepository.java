@@ -28,6 +28,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 	 * @param city search param
 	 * @return the list of emails
 	 */
+	//Query en JPQL
 	@Query("SELECT email FROM Person WHERE city = ?1")
 	Set<String> findEmailsByCity(String city);
 
@@ -43,6 +44,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 	 * @param station search param
 	 * @return list of phones
 	 */
+	//Query en SQl
 	@Query(value = "SELECT DISTINCT phone FROM person p, firestation f WHERE p.firestation_id = f.id AND station = ?", nativeQuery = true)
 	Set<String> findPhonesByFirestationStation(int station);
 
